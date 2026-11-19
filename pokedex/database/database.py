@@ -1,25 +1,38 @@
 import sqlite3
-
-from numpy import char
-
 from schemas import pokemon
 
+DB_NAME = "pokedex.db"
 
-def init_connection_db():
-    connection = sqlite3.connect("pokedex.db")
+def init_connection():
+    connection = sqlite3.connect(DB_NAME)
+    connection.row_factory = sqlite3.Row
+    return connection
+
+def init_db():
+    connection = init_connection()
     cursor = connection.cursor()
+
     cursor.execute("""
-     CREATE TABLE IF NOT EXISTS pokemon (
-     number INTEGER PRIMARY KEY,
-     name TEXT NOT NULL,
-     name_fr TEXT NOT NULL,
-     types TEXT NOT NULL,
-     image_url TEXT NOT NULL,
-     height INTEGER NOT NULL,
-     weight INTEGER NOT NULL,
-     evolves_from_number INTEGER
-     )
+        CREATE TABLE IF NOT EXISTS pokemon (
+            number INTEGER PRIMARY KEY,
+            name TEXT NOT NULL,
+            name_fr TEXT NOT NULL,
+            types TEXT NOT NULL,
+            image_url TEXT NOT NULL,
+            height INTEGER NOT NULL,
+            weight INTEGER NOT NULL,
+            evolves_from_number INTEGER
+        )
     """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS pokemon_types (
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL,
+            name_fr TEXT NOT NULL
+        )
+    """)
+
     connection.commit()
     connection.close()
     print("Base de données creee avec succes.")
@@ -34,7 +47,7 @@ def init_connection_db_show_tables():
     print([t[0] for t in tables])
     connection.close()
 
-def db_insert_pokemon(pokemon_json : pokemon, pokemon_name_fr : char):
+def db_insert_pokemon(pokemon_json : pokemon, pokemon_name_fr):
     if (len(pokemon_json['types']) < 2):
         types = f"{pokemon_json['types'][0]['type']['name']}"
     else:
@@ -46,11 +59,11 @@ def db_insert_pokemon(pokemon_json : pokemon, pokemon_name_fr : char):
 
     print(f"Poids {Poid_pokemon}, Taille {Taille_pokemon}")
 
-    connection = sqlite3.connect("pokedex.db")
+    connection = sqlite3.connect("pokedexA.db")
     cursor = connection.cursor()
 
     cursor.execute(
-        "INSERT OR REPLACE INTO pokemon VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        "INSERT INTO pokemon VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
         (
             pokemon_json["id"],
             pokemon_json["name"].capitalize(),

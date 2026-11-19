@@ -1,23 +1,23 @@
-import fastapi
-from schemas.pokemon import Pokemon
-from Clients import pokeapi as f_pokapi
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+
 from database import database
+from schemas.pokemon import Pokemon
+from Services import pokemon_service
 
-app = fastapi.FastAPI()
+app = FastAPI()
 
-database.init_connection_db()
-database.init_connection_db_show_tables()
+database.init_db()
+
 
 @app.get("/health")
-def GET_health():
+def get_health():
     return {"status": "ok"}
 
-@app.get("/pokemons/{pokemon_id}/scan")
-def get_pokemon(pokemon_id: int):
-    r_json = f_pokapi.get_pokemon_from_api(pokemon_id)
-    name_fr = f_pokapi.get_pokemon_fr_name(pokemon_id)
 
-    database.db_insert_pokemon(r_json, name_fr)
-
-
-
+@app.get("/pokemons/{number}/scan", response_model=Pokemon)
+def scan_pokemon(number: int):
+    try:
+        return pokemon_service.scan_pokemon(number)
+    except pokemon_service.PokemonAlreadyScannedError:
+        raise HTTPException(status_code=409, detail="Pokémon déjà enregistré")
