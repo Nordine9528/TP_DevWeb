@@ -46,21 +46,7 @@ def insert_pokemon(pokemon: Pokemon):
     )
     connection.commit()
     connection.close()
-
-def get_type_by_name(name: str):
-    connection = init_connection()
-    row = connection.execute(
-        "SELECT * FROM pokemon_types WHERE name = ?", (name,)
-    ).fetchone()
-    connection.close()
-    return dict(row) if row else None
+    #return qlqchose print ou jsp
 
 
-def insert_type(type_id: int, name: str, name_fr: str):
-    connection = init_connection()
-    connection.execute(
-        "INSERT INTO pokemon_types (id, name, name_fr) VALUES (?, ?, ?)",
-        (type_id, name, name_fr),
-    )
-    connection.commit()
-    connection.close()
+

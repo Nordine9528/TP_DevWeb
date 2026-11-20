@@ -1,5 +1,4 @@
 import sqlite3
-from schemas import pokemon
 
 DB_NAME = "pokedex.db"
 
@@ -47,38 +46,4 @@ def init_connection_db_show_tables():
     print([t[0] for t in tables])
     connection.close()
 
-def db_insert_pokemon(pokemon_json : pokemon, pokemon_name_fr):
-    if (len(pokemon_json['types']) < 2):
-        types = f"{pokemon_json['types'][0]['type']['name']}"
-    else:
-        types = f"{pokemon_json['types'][0]['type']['name']}; {pokemon_json['types'][1]['type']['name']}"
 
-    print("je suis ici apres la detection du type\n")
-    Poid_pokemon = pokemon_json["weight"] / 10
-    Taille_pokemon = pokemon_json["height"] / 10
-
-    print(f"Poids {Poid_pokemon}, Taille {Taille_pokemon}")
-
-    connection = sqlite3.connect("pokedexA.db")
-    cursor = connection.cursor()
-
-    cursor.execute(
-        "INSERT INTO pokemon VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-        (
-            pokemon_json["id"],
-            pokemon_json["name"].capitalize(),
-            pokemon_name_fr.capitalize(),
-            types.capitalize(),
-            pokemon_json["sprites"]["front_default"],
-            Taille_pokemon,
-            Poid_pokemon,
-            None,
-        ),
-    )
-    if cursor.rowcount == 0:
-        print(f"Pokemon {pokemon_json['name']} (id : {pokemon_json['id']}) deja dans la table")
-    else:
-        print(f"Pokemon {pokemon_json['name']} (id : {pokemon_json['id']}) ajoute dans la table")
-
-    connection.commit()
-    connection.close()

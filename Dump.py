@@ -1,7 +1,6 @@
 import requests
-import json
 
-url = "http://127.0.0.1:8000/pokemons/3/scan"
+url = "http://127.0.0.1:8000/pokemons/99/scan"
 r = requests.get(url)
 print(r.status_code)
 
